@@ -36,4 +36,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent *SpringArmComp;
+
+	void BeginCrouch();
+
+	void EndCrouch();
 };
