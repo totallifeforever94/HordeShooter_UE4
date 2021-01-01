@@ -34,7 +34,13 @@
                 "E:/UE_4.26/Engine/Source/Runtime/Slate/Public",
                 "E:/UE_4.26/Engine/Intermediate/Build/Win64/UE4Editor/Inc/Slate",
                 "E:/UE_4.26/Engine/Intermediate/Build/Win64/UE4Editor/Inc/UnrealEd",
-                "E:/UE_4.26/Engine/Source/Developer/ToolMenus/Public"
+                "E:/UE_4.26/Engine/Source/Developer/ToolMenus/Public",
+                "E:/UE_4.26/Engine/Intermediate/Build/Win64/UE4Editor/Inc/ToolMenus",
+                "E:/UE_4.26/Engine/Source/Runtime/AudioMixerCore/Public",
+                "E:/UE_4.26/Engine/Source/Runtime/AssetRegistry/Public",
+                "E:/UE_4.26/Engine/Source/Runtime/Renderer/Public",
+                "E:/UE_4.26/Engine/Source",
+                "E:/UE_4.26/Engine/Source/Runtime"
             ],
             "defines": [
                 "IS_PROGRAM=0",
