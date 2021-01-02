@@ -4,6 +4,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
 
 // Sets default values
 ASWeapon::ASWeapon()
@@ -15,6 +16,7 @@ ASWeapon::ASWeapon()
 	RootComponent = MeshComp;
 
 	BaseDamage = 20.f;
+	MuzzleSocketName = TEXT("MuzzleFlashSocket");
 }
 
 // Called when the game starts or when spawned
@@ -45,12 +47,22 @@ void ASWeapon::Fire()
 		FHitResult Hit;
 		if (GetWorld()->LineTraceSingleByChannel(Hit, Location, TraceEnd, ECC_Visibility, Params))
 		{
-			AActor * HitActor = Hit.GetActor();
+			AActor *HitActor = Hit.GetActor();
 
 			UGameplayStatics::ApplyPointDamage(HitActor, BaseDamage, ShotDirection, Hit, WeaponOwner->GetInstigatorController(), this, DamageType);
+
+			if (ImpactEffect != nullptr)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+			}
 		}
 
 		DrawDebugLine(GetWorld(), Location, TraceEnd, FColor::Red, false, 1.f, 0, 10.f);
+
+		if (MuzzleFlash != nullptr)
+		{
+			UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, MeshComp, MuzzleSocketName);
+		}
 	}
 }
 

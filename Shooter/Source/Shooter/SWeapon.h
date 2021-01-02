@@ -8,6 +8,7 @@
 
 class USkeletalMeshComponent;
 class UDamageType;
+class UParticleSystem;
 
 UCLASS()
 class SHOOTER_API ASWeapon : public AActor
@@ -35,4 +36,13 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
 	float BaseDamage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	UParticleSystem *MuzzleFlash;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+	UParticleSystem *ImpactEffect;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	FName MuzzleSocketName;
 };
