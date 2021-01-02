@@ -5,6 +5,8 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
 ASWeapon::ASWeapon()
@@ -27,43 +29,69 @@ void ASWeapon::BeginPlay()
 
 void ASWeapon::Fire()
 {
-	AActor *WeaponOwner = GetOwner();
+	AController *WeaponOwnerController = GetOwnerController();
 
-	if (WeaponOwner)
+	if (WeaponOwnerController)
 	{
 		FVector Location;
 		FRotator Rotation;
-		WeaponOwner->GetActorEyesViewPoint(Location, Rotation);
+		WeaponOwnerController->GetPlayerViewPoint(Location, Rotation);
 
 		FVector ShotDirection = Rotation.Vector();
 
-		FVector TraceEnd = Location + (Rotation.Vector() * 10000);
+		FVector TraceEnd = Location + (ShotDirection * 10000);
 
 		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(WeaponOwner);
+		Params.AddIgnoredActor(GetOwner());
 		Params.AddIgnoredActor(this);
 		Params.bTraceComplex = true;
+
+		FVector TracerEndPoint = TraceEnd;
 
 		FHitResult Hit;
 		if (GetWorld()->LineTraceSingleByChannel(Hit, Location, TraceEnd, ECC_Visibility, Params))
 		{
 			AActor *HitActor = Hit.GetActor();
 
-			UGameplayStatics::ApplyPointDamage(HitActor, BaseDamage, ShotDirection, Hit, WeaponOwner->GetInstigatorController(), this, DamageType);
+			UGameplayStatics::ApplyPointDamage(HitActor, BaseDamage, ShotDirection, Hit, GetOwner()->GetInstigatorController(), this, DamageType);
 
 			if (ImpactEffect != nullptr)
 			{
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactEffect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
 			}
+
+			TracerEndPoint = Hit.ImpactPoint;
 		}
 
-		DrawDebugLine(GetWorld(), Location, TraceEnd, FColor::Red, false, 1.f, 0, 10.f);
+		DrawDebugLine(GetWorld(), Location, TraceEnd, FColor::Red, false, 1.f, 0, 1.f);
 
 		if (MuzzleFlash != nullptr)
 		{
 			UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, MeshComp, MuzzleSocketName);
 		}
+
+		FVector MuzzleLocation = MeshComp->GetSocketLocation(MuzzleSocketName);
+		UParticleSystemComponent *TracerComp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SmokeTrail, MuzzleLocation);
+
+		if (TracerComp)
+		{
+			TracerComp->SetVectorParameter(TEXT("BeamEnd"), TracerEndPoint);
+		}
 	}
+}
+
+AController *ASWeapon::GetOwnerController() const
+{
+	APawn *OwnerPawn = Cast<APawn>(GetOwner());
+
+	if (OwnerPawn == nullptr)
+	{
+		return nullptr;
+	}
+
+	AController *OwnerController = OwnerPawn->GetController();
+
+	return OwnerController;
 }
 
 // Called every frame
