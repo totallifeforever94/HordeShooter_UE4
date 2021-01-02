@@ -29,7 +29,7 @@ protected:
 	USkeletalMeshComponent *MeshComp;
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
-	void Fire();
+	virtual void Fire();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	TSubclassOf<UDamageType> DamageType;
@@ -49,5 +49,5 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	FName MuzzleSocketName;
 
-	AController* GetOwnerController() const;
+	virtual AController* GetOwnerController() const;
 };
